@@ -1,0 +1,23 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+
+# Virtual environment directories
+venv/
+.env/
+
+# Jupyter Notebooks checkpoints
+.ipynb_checkpoints/
+
+# PyCharm project files (if you're using PyCharm)
+.idea/
+
+# Log files (if you create any logs)
+*.log
+
+# Data files (optional, if you plan to use large datasets from Kaggle, etc.)
+data/
+
+# Operating system files (e.g., macOS, Windows)
+.DS_Store
+Thumbs.db
