@@ -37,10 +37,10 @@ def householder_args(x):
     # If we have sigma = 0, then x is already a multiple of the canonical vector e_1
     # Then beta = 0, beta = 2 and beta = -2 all satisfy the properties of the householder transformation
     # The choosing of the values of beta is based on convention and numerical stability
-    if sigma == 0:
-        beta = 0
-    elif sigma == 0 and x[0] < 0:
-        beta = -2
+    if sigma == 0 and x[0] < 0:
+        beta = +2.0
+    elif sigma == 0:
+        beta = 0.0
     else:
         norm_x = np.sqrt(x[0]**2 + sigma)
 
@@ -54,19 +54,27 @@ def householder_args(x):
 
         # Finally beta is evaluated based on v(1) and sigma instead of v using algebraic steps
         # Also, beta is rescaled because of the normalization of v that follows
-        beta = 2*v[0]**2/(sigma+v[0]**2)
+        beta = -2*v[0]**2/(sigma+v[0]**2)
 
         # We normalize v so that v[0] = 1 so we can handle it easily in the next steps of the Householder reflection.
         v = v/v[0]
 
     return v, beta
 
-def householder_column(x,v,beta):
+def householder_vector(x):
+
+    n = len(x)
+    v = x + np.sign(x[0]) * np.linalg.norm(x) * np.eye(n)[:, 0]
+    v=v/v[0]
+
+    return v
+
+def householder_row(A,v, beta):
     """
-    Computes the householder transformation over a column vector.
+    Computes the right householder transformation over a matrix.
 
     Args:
-        x (np.array): column vector where the householder reflection is computed
+        X (matrix): matrix where the householder reflection is computed
         v (np.array): householder reflection vector
         beta (float): beta coefficient
 
@@ -74,16 +82,16 @@ def householder_column(x,v,beta):
         hx (np.array): column vector transformed by the householder reflection
     """
 
-    hx = x - beta * v * (v @ x)
+    A = A + np.outer(v, beta * (A.T @ v))
 
-    return hx
+    return A
 
-def householder_row(x,v,beta):
+def householder_column(A,v, beta):
     """
-    Computes the householder transformation over a row vector.
+    Computes the left householder transformation over a matrix.
 
     Args:
-        x (np.array): row vector where the householder reflection is computed
+        X (matrix): matrix where the householder reflection is computed
         v (np.array): householder reflection vector
         beta (float): beta coefficient
 
@@ -91,45 +99,36 @@ def householder_row(x,v,beta):
         hx (np.array): row vector transformed by the householder reflection
     """
 
-    hx = x - beta * (x @ v) * v
-
-    return hx
-
-def hessenberg_matrix(A):
-    """
-    Computes the upper hessenberg matrix
-
-    Args:
-    A (matrix): matrix A
-
-    Returns:
-    A (matrix): upper hessenberg matrix
-    """
-
-    n = A.shape[0]
-
-    for i in range(n-1):
-
-        v, beta = householder_args(A[i+1:n,i])
-        A[i+1:n,i] = householder_column(A[i+1:n,i], v, beta)
-        A[i, i+1:n] = householder_row(A[i,i+1:n], v, beta)
+    A = A + np.outer(beta * (A @ v), v)
 
     return A
 
-def compare_with_lapack(A, H_user, tol=1e-10):
+
+def hessenberg_matrix(A):
     """
-    Compare user's Hessenberg matrix with LAPACK's (up to sign differences).
+    Computes the upper hessenberg matrix H and the orthogonal matrix Q such that H = QAQ^T
+
+    Args:
+    A (n x n matrix): matrix A
+
+    Returns:
+    A (n x n matrix): upper hessenberg matrix
+    Q (n x n matrix): orthogonal matrix Q
     """
-    H_lapack = hessenberg(A)
 
-    print(H_lapack)
-    print(H_user)
+    n = A.shape[0]
+    H = A.copy()
+    Q = np.eye(n)
 
-    print(np.allclose(np.abs(H_user), np.abs(H_lapack)))
+    for i in range(n-2):
 
+        v, beta = householder_args(H[i+1:n,i])
 
-A = np.random.rand(10, 10)
+        H[i+1:n,i:n] = householder_row(H[i+1:n,i:n], v, beta)
+        H[:, i+1:n] = householder_column(H[:,i+1:n], v, beta)
 
-H = hessenberg_matrix(A)
+        Q[i+1:n,:] = householder_row(Q[i+1:n,:], v, beta)
+        #Q[:,i+1:n] = householder_right(Q[:,i+1:n], v, beta)
 
-compare_with_lapack(A, H)
+    return H,Q
+

@@ -90,8 +90,8 @@ def givens_args(xi,xk):
         xk (float): parameter xk
 
     Returns:
-        c (np.array): cos(theta)
-        s (np.array): sin(theta)
+        c (np.array): cos(θ)
+        s (np.array): sin(θ)
     """
 
     if xk == 0:
@@ -109,3 +109,53 @@ def givens_args(xi,xk):
             s = c*tal
 
     return c,s
+
+def givens_row(A, c, s):
+    """
+    Applies a 2x2 Givens rotation to the two rows of A.
+
+    Args:
+        A (2 x n matrix): The two consecutive rows to rotate
+        c (float): cos(θ)
+        s (float): sin(θ)
+
+    Returns:
+        A (2 x n matrix): Rotated rows
+    """
+
+    n = A.shape[1]
+    for i in range(n):
+        tau1 = A[0, i].copy()
+        tau2 = A[1, i].copy()
+        A[0,i] = c*tau1 - s*tau2
+        A[1,i] = s*tau1 + c*tau2
+
+    return A
+
+def givens_column(A, c, s):
+    """
+    Applies a Givens rotation to the columns i and k of A.
+
+    This corresponds to multiplying A on the right by G(i,k,θ)^T.
+
+    Args:
+        A (np.ndarray): Matrix (n x n or n x m)
+        i (int): Index of the first column
+        k (int): Index of the second column
+        c (float): cos(θ)
+        s (float): sin(θ)
+
+    Returns:
+        np.ndarray: Matrix with the rotation applied to columns i and k
+    """
+
+    n = A.shape[0]
+    for i in range(n):
+        tau1 = A[i, 0].copy()
+        tau2 = A[i, 1].copy()
+        A[i,0] = c*tau1 - s*tau2
+        A[i,1] = s*tau1 + c*tau2
+
+    return A
+
+
