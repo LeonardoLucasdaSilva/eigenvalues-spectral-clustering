@@ -131,4 +131,3 @@ def hessenberg_matrix(A):
         #Q[:,i+1:n] = householder_right(Q[:,i+1:n], v, beta)
 
     return H,Q
-

@@ -3,7 +3,7 @@ import numpy as np
 from utils.householder import hessenberg_matrix
 from utils.givens import givens_args, givens_row, givens_column
 
-def qr_iteration(A, max_iter=100, tol=1e-10):
+def qr_iteration_householder(A, max_iter=100, tol=1e-10):
 
     n = A.shape[0]
     H,Q = hessenberg_matrix(A)
@@ -31,7 +31,7 @@ def qr_iteration(A, max_iter=100, tol=1e-10):
     return H,Q
 
 # CLASS NOTES
-def qr_iter(A, Q=None, maxiter=100, tol=1e-5):
+def qr_iteration(A, Q=None, maxiter=100, tol=1e-5):
   Q = np.eye(A.shape[0]) if Q==None else Q
   T0 = Q.T @ A @ Q
   info = -1
@@ -55,7 +55,7 @@ A = np.array([
 
 print(np.linalg.eig(A))
 
-H,Q = qr_iteration(A)
+H,Q = qr_iteration_householder(A)
 
 print(H)
 print(Q)
