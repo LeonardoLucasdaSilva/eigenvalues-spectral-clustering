@@ -61,20 +61,20 @@ def householder_args(x):
 
     return v, beta
 
-def householder_vector(x):
-
-    n = len(x)
-    v = x + np.sign(x[0]) * np.linalg.norm(x) * np.eye(n)[:, 0]
-    v=v/v[0]
-
-    return v
+# def householder_vector(x):
+#
+#     n = len(x)
+#     v = x + np.sign(x[0]) * np.linalg.norm(x) * np.eye(n)[:, 0]
+#     v=v/v[0]
+#
+#     return v
 
 def householder_row(A,v, beta):
     """
     Computes the right householder transformation over a matrix.
 
     Args:
-        X (matrix): matrix where the householder reflection is computed
+        A (matrix): matrix where the householder reflection is computed
         v (np.array): householder reflection vector
         beta (float): beta coefficient
 
@@ -91,7 +91,7 @@ def householder_column(A,v, beta):
     Computes the left householder transformation over a matrix.
 
     Args:
-        X (matrix): matrix where the householder reflection is computed
+        A (matrix): matrix where the householder reflection is computed
         v (np.array): householder reflection vector
         beta (float): beta coefficient
 
@@ -112,7 +112,7 @@ def hessenberg_matrix(A):
     A (n x n matrix): matrix A
 
     Returns:
-    A (n x n matrix): upper hessenberg matrix
+    H (n x n matrix): upper hessenberg matrix
     Q (n x n matrix): orthogonal matrix Q
     """
 

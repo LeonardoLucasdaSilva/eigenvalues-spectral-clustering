@@ -21,18 +21,3 @@ def jacobi_cyclic(A, maxiter = 15, tol = 1e-12):
             break
 
     return A,V
-
-A = np.array([
-    [19, 22, 19, 28, 34],
-    [22, 32, 28, 37, 41],
-    [19, 28, 44, 41, 51],
-    [28, 37, 41, 52, 56],
-    [34, 41, 51, 56, 77]
-], dtype=float)
-
-print(np.linalg.eig(A))
-
-A,V = jacobi_cyclic(A)
-
-print(A)
-print(V)
