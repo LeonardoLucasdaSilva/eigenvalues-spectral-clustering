@@ -1,6 +1,7 @@
 import numpy as np
 
 from algorithms.arnoldi import arnoldi
+from algorithms.lanczos import lanczos
 from algorithms.power_method import power_method
 from algorithms.qr_iteration import qr_iteration_householder
 from algorithms.jacobi_ciclic import jacobi_cyclic
@@ -20,7 +21,7 @@ print("Arnoldi method:")
 
 B = A.copy()
 v1 = np.ones(5)
-H,Q = arnoldi(B,v1,1000)
+H,Q = arnoldi(B,v1,B.shape[0])
 
 print(H)
 print(Q.T)
@@ -41,3 +42,21 @@ A,V = jacobi_cyclic(B)
 
 print(A)
 print(V)
+
+print("Lanczos:")
+
+A = np.array([
+    [11, 6, 9, 10],
+    [6, 7, 7, 9],
+    [9, 7, 9, 10],
+    [10, 9, 10,14]
+], dtype=float)
+
+B = A.copy()
+print(np.linalg.eig(B))
+v1 = np.random.rand(4)
+
+eigenvalues, eigenvectors = lanczos(B,v1, B.shape[0], B.shape[0])
+
+print(eigenvalues)
+print(eigenvectors)

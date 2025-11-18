@@ -1,14 +1,15 @@
 import numpy as np
 from algorithms.qr_iteration import qr_iteration_householder_h
 
-def arnoldi(A, v1, kmax, tol=1e-12):
+def arnoldi(A, v1, m = 0, tol=1e-14):
     n = A.shape[0]
-    V = np.zeros((n, kmax+1))
-    H = np.zeros((kmax+1, kmax))
+
+    V = np.zeros((n, m+1))
+    H = np.zeros((m+1, m))
 
     V[:, 0] = v1 / np.linalg.norm(v1)
 
-    for i in range(kmax):
+    for i in range(m):
         avj = A @ V[:, i]
 
         # Compute all H[j,i]
@@ -30,7 +31,7 @@ def arnoldi(A, v1, kmax, tol=1e-12):
 
         V[:, i+1] = vhat / H[i+1, i]
 
-    return H[:kmax, :kmax], np.eye(n)
+    return H[:m, :m], np.eye(n)
 
 
 

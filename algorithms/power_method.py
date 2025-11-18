@@ -34,29 +34,7 @@ def power_method(A, q0, maxiter = 1000, tol = 1e-12):
         # Compare the last two approximations to see if they are close to each other
         if (np.fabs(nu[1]-nu[0])<tol):
 
-            print("Convergiu")
             return nu[1],q
-
-            break
 
         # Updates the last iteration value
         nu[0] = nu[1]
-
-
-n = 4
-
-A = np.array([
-    [10.0, 3.0, 0.0, 0.0],
-    [3.0, 7.0, 2.0, 0.0],
-    [0.0, 2.0, 4.0, 1.0],
-    [0.0, 0.0, 1.0, 2.0]
-], dtype=float)
-
-print(np.linalg.eig(A))
-
-q0 = np.ones(n)
-
-lam, v = power_method(A,q0)
-
-print(lam)
-print(v)
