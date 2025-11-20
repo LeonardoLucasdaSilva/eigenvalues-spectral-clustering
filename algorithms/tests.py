@@ -1,62 +1,52 @@
 import numpy as np
-
 from algorithms.arnoldi import arnoldi
 from algorithms.lanczos import lanczos
-from algorithms.power_method import power_method
+from algorithms.power_method import power_method, shifted_inverse_power_method
 from algorithms.qr_iteration import qr_iteration_householder
 from algorithms.jacobi_ciclic import jacobi_cyclic
+from algorithms.retrieve_data import matrix_L
+from utils.metrics import relative_error
 
-A = np.array([
-    [19, 22, 19, 28, 34],
-    [22, 32, 28, 37, 41],
-    [19, 28, 44, 41, 51],
-    [28, 37, 41, 52, 56],
-    [34, 41, 51, 56, 77]
-], dtype=float)
+np.set_printoptions(precision=4, suppress=True, linewidth=150)
+
+# Iris tests
+
+path_iris = "../datasets/iris.csv"
+cols_iris = ["sepal_length","sepal_width","petal_length","petal_width"]  # choose which columns matter
+L_iris = matrix_L(path_iris,cols_iris)
+B = L_iris.copy()
 
 print("Eigenpairs by Python Library:")
-print(np.linalg.eig(A))
-
-print("Arnoldi method:")
-
-B = A.copy()
-v1 = np.ones(5)
-H,Q = arnoldi(B,v1,B.shape[0])
-
-print(H)
-print(Q.T)
+r1 = np.linalg.eigvals(B)
+print(r1)
 
 print("QR iteration:")
 
-B = A.copy()
+B = L_iris.copy()
 
 H,Q = qr_iteration_householder(B)
-print(H)
-print(Q)
+r2 = np.diag(H)
+print(r2)
 
-print("Jacobi cyclic:")
+relative_error(r1,r2)
 
-B = A.copy()
+B = L_iris.copy()
 
-A,V = jacobi_cyclic(B)
+#print(measure(r1,r2))
 
-print(A)
-print(V)
+print("Power method with QR:")
 
-print("Lanczos:")
+H, Q = qr_iteration_householder(B, tol=5e-3)
+diag = np.diag(H)
+eigs = []
+q0 = np.ones(len(diag))
 
-A = np.array([
-    [11, 6, 9, 10],
-    [6, 7, 7, 9],
-    [9, 7, 9, 10],
-    [10, 9, 10,14]
-], dtype=float)
+for d in diag:
+    value, vector = shifted_inverse_power_method(B, q0, d)
+    eigs.append(value)
 
-B = A.copy()
-print(np.linalg.eig(B))
-v1 = np.random.rand(4)
+eigs = np.array(eigs)
 
-eigenvalues, eigenvectors = lanczos(B,v1, B.shape[0], B.shape[0])
+relative_error(r1,eigs)
 
-print(eigenvalues)
-print(eigenvectors)
+print(eigs)
