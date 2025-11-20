@@ -38,3 +38,44 @@ def power_method(A, q0, maxiter = 1000, tol = 1e-12):
 
         # Updates the last iteration value
         nu[0] = nu[1]
+
+def shifted_inverse_power_method(A, q0, mu, maxiter=1000, tol=1e-12):
+    """
+    Find the eigenvalue of A closest to a given shift mu using the shifted inverse power method.
+
+    Args:
+        A (n x n matrix): Matrix input
+        q0 (n vector): Initial approximation of eigenvector
+        mu (float): Shift value
+        maxiter (int): Maximum number of iterations
+        tol (float): Relative error tolerance
+
+    Returns:
+        lambda_closest: eigenvalue closest to mu
+        q: corresponding eigenvector
+    """
+
+    q = q0 / np.linalg.norm(q0)
+    nu = np.zeros(2)
+
+    # First Rayleigh quotient (true eigenvalue estimate)
+    nu[0] = np.dot(q, A @ q)
+
+    for k in range(maxiter):
+
+        # Solve (A - muI) z = q  instead of multiplying
+        z = np.linalg.solve(A - mu * np.eye(A.shape[0]), q)
+
+        # Normalize
+        q = z / np.linalg.norm(z)
+
+        # Compute Rayleigh quotient
+        nu[1] = np.dot(q, A @ q)
+
+        # Check convergence
+        if np.abs(nu[1] - nu[0]) < tol:
+            return nu[1], q
+
+        nu[0] = nu[1]
+
+    return nu[1], q
