@@ -14,7 +14,6 @@ Functions:
 
 import numpy as np
 from scipy.linalg.lapack import dgehrd
-np.set_printoptions(precision=3, suppress=True, linewidth=150)
 
 def givens_cs(xi,xk):
     """

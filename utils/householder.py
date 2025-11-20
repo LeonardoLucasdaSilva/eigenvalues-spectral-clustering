@@ -13,7 +13,6 @@ Functions:
 
 import numpy as np
 from scipy.linalg import hessenberg
-np.set_printoptions(precision=3, suppress=True, linewidth=150)
 
 def householder_args(x):
     """
