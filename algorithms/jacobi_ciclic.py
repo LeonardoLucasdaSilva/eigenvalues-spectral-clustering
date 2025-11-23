@@ -3,11 +3,11 @@ import numpy as np
 from utils.givens import givens_row, givens_column
 from utils.jacobi import jacobi_args
 
-def jacobi_cyclic(A, maxiter = 15, tol = 1e-12):
+def jacobi_cyclic(A, maxiter = 10000, tol = 1e-12):
 
     n = A.shape[0]
     V = np.eye(n)
-
+    prev_err = -1
     for k in range(maxiter):
 
         for i in range(n-1):
@@ -17,7 +17,10 @@ def jacobi_cyclic(A, maxiter = 15, tol = 1e-12):
                 A[:, [i,j]] = givens_column(A[:, [i,j]], c, s)
                 V[:, [i,j]] = givens_column(V[:, [i,j]], c, s)
 
-        if np.linalg.norm(A-np.diag(A), ord='fro')<=tol:
+        err = np.max(np.abs(np.tril(A, -1)))
+        if abs(prev_err - err) < tol:
             break
+        prev_err = err
 
+        print(f"k = {k}, err = {err}")
     return A,V
