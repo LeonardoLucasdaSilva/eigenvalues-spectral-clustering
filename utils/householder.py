@@ -127,6 +127,5 @@ def hessenberg_matrix(A):
         H[:, i+1:n] = householder_column(H[:,i+1:n], v, beta)
 
         Q[i+1:n,:] = householder_row(Q[i+1:n,:], v, beta)
-        #Q[:,i+1:n] = householder_right(Q[:,i+1:n], v, beta)
 
     return H,Q
