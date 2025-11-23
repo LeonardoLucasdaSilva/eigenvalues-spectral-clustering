@@ -54,7 +54,7 @@ A = np.array([
 
 B = A.copy()
 print(np.linalg.eig(B))
-v1 = np.random.rand(4)
+v1 = np.random.rand(B.shape[0])
 
 eigenvalues, eigenvectors = lanczos(B,v1, B.shape[0], B.shape[0])
 
