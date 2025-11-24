@@ -3,11 +3,22 @@ import pandas as pd
 import os
 from sklearn.preprocessing import StandardScaler
 
-def matrix_L_sym(normalize, sigma):
+def matrix_L_sym(normalize, sigma, dataset):
 
-    path = "../../datasets/iris.csv"
-    cols = ["sepal_length", "sepal_width", "petal_length", "petal_width"]  # choose which columns matter
-    filename = "../../algorithms/iris_sym.npy"
+    if dataset == 'iris':
+        path = "../../datasets/iris.csv"
+        cols = ["sepal_length", "sepal_width", "petal_length", "petal_width"]  # Columns to be considered
+        filename = "../../matrices/iris_sym.npy"
+    elif dataset == 'tesla':
+        path = "../../datasets/tesla_deliveries_dataset_2015_2025.csv"
+        cols = ["Estimated_Deliveries", "Production_Units", "Avg_Price_USD", "Battery_Capacity_kWh", "Range_km",
+                      "CO2_Saved_tons", "Charging_Stations"]  # Columns to be considered
+        filename = "../../matrices/tesla_sym.npy"
+    elif dataset == 'd_and_d':
+        path = "../../datasets/d_and_d.csv"
+        cols = ["height", "weight", "speed", "strength", "dexterity", "constitution", "intelligence", "wisdom", "charisma"]  # Columns to be considered
+        filename = "../../matrices/d_and_d_sym.npy"
+
 
     if os.path.exists(filename):
         print("Loading saved matrix...")
@@ -45,11 +56,22 @@ def matrix_L_sym(normalize, sigma):
 
     return L
 
-def matrix_L_rw(normalize, sigma):
+def matrix_L_rw(normalize, sigma, dataset):
 
-    path = "../../datasets/iris.csv"
-    cols = ["sepal_length", "sepal_width", "petal_length", "petal_width"]  # choose which columns matter
-    filename = "../../algorithms/iris_rw.npy"
+    if dataset == 'iris':
+        path = "../../datasets/iris.csv"
+        cols = ["sepal_length", "sepal_width", "petal_length", "petal_width"]  # choose which columns matter
+        filename = "../../matrices/iris_rw.npy"
+
+    elif dataset == 'tesla':
+        path = "../../datasets/tesla_deliveries_dataset_2015_2025.csv"
+        cols = ["Estimated_Deliveries", "Production_Units", "Avg_Price_USD", "Battery_Capacity_kWh", "Range_km",
+                      "CO2_Saved_tons", "Charging_Stations"]  # choose which columns matter
+        filename = "../../matrices/tesla_rw.npy"
+    elif dataset == 'd_and_d':
+        path = "../../datasets/d_and_d.csv"
+        cols = ["height", "weight", "speed", "strength", "dexterity", "constitution", "intelligence", "wisdom", "charisma"]  # Columns to be considered
+        filename = "../../matrices/d_and_d_rw.npy"
 
     if os.path.exists(filename):
         print("Loading saved matrix...")
