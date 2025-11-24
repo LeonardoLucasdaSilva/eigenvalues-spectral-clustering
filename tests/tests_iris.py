@@ -1,10 +1,8 @@
 import numpy as np
 from algorithms.power_method import power_method, shifted_inverse_power_method
-from algorithms.qr_iteration import qr_iteration_householder, qr_iteration_householder_deflation
 from algorithms.jacobi_ciclic import jacobi_cyclic
-from algorithms.retrieve_data import matrix_L
+from algorithms.retrieve_data import matrix_L_sym
 from utils.metrics import relative_error
-from algorithms.francis_qr import francis_qr
 import time
 from joblib import Parallel, delayed
 
@@ -14,7 +12,7 @@ path_iris = "../datasets/iris.csv"
 cols_iris = ["sepal_length","sepal_width","petal_length","petal_width"]  # choose which columns matter
 filename_iris = "../algorithms/iris.npy"
 
-L_iris = matrix_L(path_iris,cols_iris,filename_iris, True, 0.1)
+L_iris = matrix_L_sym(True, 0.01, 'iris')
 B = L_iris.copy()
 
 
@@ -43,30 +41,7 @@ print("Elapsed time:", end - start, "seconds")
 #
 # B = L_iris.copy()
 #
-# print("Power method with QR:")
-#
-# B = L_iris.copy()
-#
-# start = time.time()
-#
-# H, Q = qr_iteration_householder(B, max_iter=1000,tol=1e-3)
-# diag = np.diag(H)
-#
-# results = Parallel(n_jobs=-5)(
-#     delayed(shifted_inverse_power_method)(B, Q[i,:], diag[i])
-#     for i in range(len(diag))
-# )
-#
-# end = time.time()
-#
-# r3 = [float(val) for val, vec in results]
-#
-# print("Elapsed time:", end - start, "seconds")
-#
-# relative_error(r1,r3)
-
-
-k = L_iris.shape[0]
+k = 150
 print(f"Power method with deflation(k = {k}):")
 
 B = L_iris.copy()
