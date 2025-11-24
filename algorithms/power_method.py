@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.linalg import lu_factor, lu_solve
 
-def power_method(A, q0, maxiter = 500, tol = 1e-12):
+def power_method(A, q0, maxiter = 1000, tol = 1e-14):
     """
     Find the dominant eigenvalue of a matrix by the power method.
 
@@ -33,7 +33,7 @@ def power_method(A, q0, maxiter = 500, tol = 1e-12):
         nu[1] = np.dot(q, A @ q)
 
         # Compare the last two approximations to see if they are close to each other
-        if (np.fabs(nu[1]-nu[0])<tol):
+        if np.fabs(nu[1] - nu[0]) < tol:
 
             return nu[1],q
 
