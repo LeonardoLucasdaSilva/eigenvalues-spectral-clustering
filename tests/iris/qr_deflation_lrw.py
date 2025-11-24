@@ -5,20 +5,20 @@ from utils.metrics import relative_error
 import time
 
 # Build the L_rw matrix
-L_rw_iris = matrix_L_rw(True, 0.01)
+L_rw = matrix_L_rw(True, 0.01, 'iris')
 
 # Retrieve eigenvalues using numpy for comparison
-r1 = np.linalg.eigvals(L_rw_iris)
+r1 = np.linalg.eigvals(L_rw)
 times = []
 
 # Number of samples to average time
-n = 10
+n = 1
 
-print("QR iteration with shift and deflation:")
+print("QR iteration with deflation for L_rw matrix:")
 for k in range(n):
     start = time.time()
 
-    H, Q = qr_iteration_householder_deflation(L_rw_iris, tol = 1e-8)
+    H, Q = qr_iteration_householder_deflation(L_rw, tol = 1e-8)
 
     end = time.time()
 

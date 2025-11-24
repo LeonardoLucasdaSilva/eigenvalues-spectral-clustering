@@ -5,21 +5,21 @@ from utils.metrics import relative_error
 import time
 
 # Build the L_sym matrix
-L_sym_iris = matrix_L_sym(True, 0.01)
+L_sym = matrix_L_sym(True, 0.01, 'iris')
 
 # Retrieve eigenvalues using numpy for comparison
-r1 = np.linalg.eigvals(L_sym_iris)
+r1 = np.linalg.eigvals(L_sym)
 times = []
 
 # Number of samples to average time
-n = 10
+n = 1
 
-print("QR iteration with shift and deflation:")
+print("QR iteration with shift and deflation for L_sym matrix:")
 for k in range(n):
 
     start = time.time()
 
-    H,Q = qr_iteration_householder_deflation(L_sym_iris, tol = 1e-8)
+    H,Q = qr_iteration_householder_deflation(L_sym, tol = 1e-8)
 
     end = time.time()
 

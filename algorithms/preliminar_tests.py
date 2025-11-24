@@ -3,7 +3,7 @@ import numpy as np
 from algorithms.arnoldi import arnoldi
 from algorithms.lanczos import lanczos
 from algorithms.power_method import power_method
-from algorithms.qr_iteration import qr_iteration_householder
+from algorithms.qr_iteration import qr_iteration_householder_deflation
 from algorithms.jacobi_ciclic import jacobi_cyclic
 
 A = np.array([
@@ -30,7 +30,7 @@ print("QR iteration:")
 
 B = A.copy()
 
-H,Q = qr_iteration_householder(B)
+H,Q = qr_iteration_householder_deflation(B)
 print(H)
 print(Q)
 

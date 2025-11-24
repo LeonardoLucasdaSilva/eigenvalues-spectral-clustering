@@ -4,7 +4,7 @@ from utils.householder import hessenberg_matrix
 from utils.givens import givens_args, givens_row, givens_column
 from scipy.linalg import hessenberg
 
-def qr_iteration_householder(A, max_iter=10000, tol=1e-10):
+def qr_iteration_householder_shift(A, max_iter=10000, tol=1e-10):
 
     n = A.shape[0]
     #A, D = matrix_balance(A)
@@ -48,7 +48,7 @@ def qr_iteration_householder(A, max_iter=10000, tol=1e-10):
 
     return H,Q
 
-def qr_iteration_householder_deflation(A, max_iter=10000, tol=1e-12):
+def qr_iteration_householder_shift_deflation(A, max_iter=10000, tol=1e-12):
     n = A.shape[0]
     H, Q = hessenberg_matrix(A)
 
@@ -107,6 +107,53 @@ def qr_iteration_householder_deflation(A, max_iter=10000, tol=1e-12):
         # logging
         err = np.max(np.abs(np.tril(H, -1)))
         #print(f"k={k}, m={m}, shift={mu:.3e}, error={err:.3e}")
+
+        if err < tol:
+            break
+
+    return H, Q
+
+def qr_iteration_householder_deflation(A, max_iter=10000, tol=1e-12):
+    n = A.shape[0]
+    H, Q = hessenberg_matrix(A)
+
+    m = n  # keep m across iterations
+
+    for k in range(max_iter):
+
+        # --- DEFLATION (relative criterion recommended) ---
+        while m > 1 and abs(H[m-1, m-2]) < tol * (abs(H[m-2,m-2]) + abs(H[m-1,m-1])):
+            H[m-1, m-2] = 0
+            m -= 1
+
+        # matrix fully reduced?
+        if m <= 1:
+            break
+
+        # handle 2x2 blocks explicitly
+        if m == 2:
+            # no QR step needed—just compute the 2x2 eigenvalues
+            # Normally we would solve analytically, but here just stop
+            break
+
+        H_active = H[:m, :m]
+
+        # Givens rotation arrays sized to m
+        c = np.zeros(m)
+        s = np.zeros(m)
+
+        # --- QR STEP (Left) ---
+        for i in range(m - 1):
+            c[i], s[i] = givens_args(H_active[i, i], H_active[i + 1, i])
+            H_active[i:i + 2, i:m] = givens_row(H_active[i:i + 2, i:m], c[i], s[i])
+            Q[i:i + 2, :] = givens_row(Q[i:i + 2, :], c[i], s[i])
+
+        # --- QR STEP (Right) ---
+        for i in range(m - 1):
+            H_active[:i + 2, i:i + 2] = givens_column(H_active[:i + 2, i:i + 2], c[i], s[i])
+
+        # logging
+        err = np.max(np.abs(np.tril(H, -1)))
 
         if err < tol:
             break
