@@ -27,4 +27,19 @@ def relative_error(v1, v2, plot=True):
         plt.show()
 
     print("Significative errors:")
-    print([(i, x) for i, x in enumerate(error) if x > 1e-1])
+    significative_errors = [(v1[i],v2[i], i, x) for i, x in enumerate(error) if x > 1e-3]
+    print(significative_errors)
+
+    return error, len(significative_errors)
+
+
+def orthogonality_measure(u, v):
+    u = np.asarray(u)
+    v = np.asarray(v)
+
+    dot = np.dot(u, v)
+    norms = np.linalg.norm(u) * np.linalg.norm(v)
+
+    cos_theta = dot / norms
+    print(cos_theta)
+    return abs(cos_theta)
