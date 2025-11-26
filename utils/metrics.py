@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-def relative_error(v1, v2, plot=True):
+def relative_error(v1, v2, title, plot=True):
     v1 = sorted(v1, reverse=True)
     v2 = sorted(v2, reverse=True)
 
@@ -13,14 +13,15 @@ def relative_error(v1, v2, plot=True):
 
         # Se a parte real é ~0 para ambos, erro = 0
         if abs(np.real(num)) < 1e-10 and abs(np.real(den)) < 1e-10:
-            error.append(0.0)
+            error.append(1e-15)
         else:
             error.append(np.linalg.norm(num) / np.linalg.norm(den))
 
     if plot:
         plt.figure()
         plt.plot(error, marker='o')
-        plt.title("Relative Error per Component")
+        plt.yscale("log")
+        plt.title(f"Relative Error per Component ({title})")
         plt.xlabel("Component Index")
         plt.ylabel("Relative Error")
         plt.grid(True)

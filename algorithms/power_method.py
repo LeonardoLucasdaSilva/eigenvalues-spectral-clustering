@@ -60,7 +60,7 @@ def shifted_inverse_power_method(A, q0, mu, maxiter=1000, tol=1e-10):
 
     n = A.shape[0]
 
-    # Precompute shifted matrix ONCE
+    # Precompute shifted matrix
     M = A - mu * np.eye(n)
 
     # LU factorization

@@ -9,7 +9,6 @@ from utils.metrics import relative_error
 # Build matrix
 L_sym = matrix_L_sym(True, 0.01, 'iris')
 
-# Ground truth eigenvalues
 r1 = np.linalg.eigvals(L_sym)
 
 # Number of samples per run
@@ -19,7 +18,7 @@ n = 5
 k_values = list(range(10, 110, 10))
 
 max_errors = []
-significant_counts = []    # NEW
+significant_counts = []
 
 print("Power method with deflation over multiple k values:")
 
@@ -49,8 +48,7 @@ for n_eigs in k_values:
 
     print(f"  Avg Time = {np.mean(times):.4f}s")
 
-    # relative_error now returns (errors, count)
-    err, count = relative_error(r1[:n_eigs], collected_eigs, False)
+    err, count = relative_error(r1[:n_eigs], collected_eigs,"Power method with deflation")
 
     max_errors.append(max(err))
     significant_counts.append(count)      # store count of errors > 1e-3

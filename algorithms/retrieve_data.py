@@ -24,7 +24,8 @@ def matrix_L_sym(normalize, sigma, dataset):
         print("Loading saved matrix...")
         L = np.load(filename)
     else:
-        print("Building matrix...") # whatever function builds your matrix
+        print("Building matrix...")
+
         # Load CSV
         df = pd.read_csv(path, usecols=cols)
 
@@ -42,15 +43,14 @@ def matrix_L_sym(normalize, sigma, dataset):
                 A[i, j] = np.exp(-(np.linalg.norm(df.iloc[i] - df.iloc[j])) ** 2 / (2 * sigma ** 2))
                 print(f'i = {i}, j = {j}, A[i, j] = {A[i, j]}')
 
-        # Soma das linhas (grau)
         degrees = np.sum(A, axis=1)
 
-        # Evitar divisão por zero
+        # Avoid division by zero
         diag = np.zeros_like(degrees)
         mask = degrees > 0
         diag[mask] = degrees[mask]**(-0.5)
 
-        # Laplaciano normalizado: L = D^(-1/2) * A * D^(-1/2)
+        # Normalized laplacian: L = D^(-1/2) * A * D^(-1/2)
         L = A * diag[:, None] * diag[None, :]
         np.save(filename, L)
 

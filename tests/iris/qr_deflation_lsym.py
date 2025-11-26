@@ -12,9 +12,9 @@ r1 = np.linalg.eigvals(L_sym)
 times = []
 
 # Number of samples to average time
-n = 1
+n = 5
 
-print("QR iteration with shift and deflation for L_sym matrix:")
+print("QR iteration with deflation for L_sym matrix:")
 for k in range(n):
 
     start = time.time()
@@ -29,4 +29,4 @@ for k in range(n):
     times.append(end - start)
 
 print(f"Average processing time with {n} samples: {np.mean(times)} seconds")
-relative_error(r1,r2)
+error = relative_error(r1,r2, title="Deflated QR")

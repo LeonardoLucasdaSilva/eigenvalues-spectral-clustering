@@ -12,14 +12,14 @@ r1 = np.linalg.eigvals(L_sym)
 times = []
 
 # Number of samples to average time
-n = 1
+n = 5
 
 print("QR iteration with shift for L_sym matrix:")
 for k in range(n):
 
     start = time.time()
 
-    H,Q = qr_iteration_householder_shift(L_sym, tol = 1e-8)
+    H,Q = qr_iteration_householder_shift(L_sym, tol = 5e-8)
 
     end = time.time()
 
@@ -29,4 +29,4 @@ for k in range(n):
     times.append(end - start)
 
 print(f"Average processing time with {n} samples: {np.mean(times)} seconds")
-relative_error(r1,r2)
+relative_error(r1,r2,title = "Shifted QR")

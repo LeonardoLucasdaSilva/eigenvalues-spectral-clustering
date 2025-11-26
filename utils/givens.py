@@ -124,6 +124,7 @@ def givens_row(A, c, s):
 
     n = A.shape[1]
     for i in range(n):
+
         tau1 = A[0, i].copy()
         tau2 = A[1, i].copy()
         A[0,i] = c*tau1 - s*tau2
@@ -156,5 +157,57 @@ def givens_column(A, c, s):
         A[i,1] = s*tau1 + c*tau2
 
     return A
+
+def givens_column_general(A, i, k, c, s):
+    """
+    Applies a Givens rotation to the columns i and k of A.
+
+    This corresponds to multiplying A on the right by G(i,k,θ)^T.
+
+    Args:
+        A (np.ndarray): Matrix (n x n or n x m)
+        i (int): Index of the first column
+        k (int): Index of the second column
+        c (float): cos(θ)
+        s (float): sin(θ)
+
+    Returns:
+        np.ndarray: Matrix with the rotation applied to columns i and k
+    """
+
+    for row in range(A.shape[0]):
+        tau1 = A[row, i]
+        tau2 = A[row, k]
+        A[row, i] = c*tau1 - s*tau2
+        A[row, k] = s*tau1 + c*tau2
+    return A
+
+def givens_row_general(A, i, k, c, s):
+    """
+    Applies a Givens rotation to the columns i and k of A.
+
+    This corresponds to multiplying A on the left by G(i,k,θ).
+
+    Args:
+        A (np.ndarray): Matrix (n x n or n x m)
+        i (int): Index of the first column
+        k (int): Index of the second column
+        c (float): cos(θ)
+        s (float): sin(θ)
+
+    Returns:
+        np.ndarray: Matrix with the rotation applied to columns i and k
+    """
+
+    n = A.shape[1]
+    for col in range(n):
+
+        tau1 = A[i, col].copy()
+        tau2 = A[k, col].copy()
+        A[i,col] = c*tau1 - s*tau2
+        A[k,col] = s*tau1 + c*tau2
+
+    return A
+
 
 

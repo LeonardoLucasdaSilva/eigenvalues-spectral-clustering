@@ -4,18 +4,18 @@ import matplotlib.pyplot as plt
 
 from algorithms.power_method import power_method
 from algorithms.retrieve_data import matrix_L_sym
-from utils.metrics import relative_error, orthogonality_measure
+from utils.metrics import relative_error
 
 # Build matrix
 L_sym = matrix_L_sym(True, 0.01, 'd_and_d')
 
-# Ground truth eigenvalues
+# Numpy eigenvalues
 r1,v1 = np.linalg.eig(L_sym)
 
-r_sorted = np.sort(r1)[::-1]   # descending if you prefer
+r_sorted = np.sort(r1)[::-1]
 
 # diffs already computed
-diffs = np.abs(np.diff(r_sorted[:120]))
+diffs = np.abs(np.diff(r_sorted[:100]))
 
 k = 10
 closest_indices = np.argsort(diffs)[:k]
@@ -30,7 +30,7 @@ for idx in closest_indices:
     )
 
 # Number of samples per run
-n = 1
+n = 5
 
 # Range of k values
 k_values = list(range(10, 110, 10))
@@ -66,8 +66,7 @@ for n_eigs in k_values:
 
     print(f" Average time ({n} samples)= {np.mean(times):.4f}s")
 
-    # relative_error now returns (errors, count)
-    err, count = relative_error(r1[:n_eigs], eigenvalues, False)
+    err, count = relative_error(r1[:n_eigs], eigenvalues, "Power method with deflation", False)
 
     max_errors.append(max(err))
     significant_counts.append(count)      # store count of errors > 1e-3

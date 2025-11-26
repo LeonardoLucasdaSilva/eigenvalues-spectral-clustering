@@ -1,13 +1,14 @@
 import numpy as np
 
 from utils.householder import hessenberg_matrix
-from utils.givens import givens_args, givens_row, givens_column
-from scipy.linalg import hessenberg
+from utils.givens import givens_args, givens_row, givens_column, givens_cs, givens_column_general, givens_row_general
+import time
+from utils.shifts import wilkinson_shift
+
 
 def qr_iteration_householder_shift(A, max_iter=10000, tol=1e-10):
 
     n = A.shape[0]
-    #A, D = matrix_balance(A)
     H,Q = hessenberg_matrix(A)
 
     c = np.zeros(n)
@@ -22,7 +23,7 @@ def qr_iteration_householder_shift(A, max_iter=10000, tol=1e-10):
         d = (a - c2) / 2
         mu = c2 - (np.sign(d) * b ** 2) / (abs(d) + np.sqrt(d ** 2 + b ** 2))
 
-        # apply shift: H <- H - muI
+        # apply shift
         H -= mu * np.eye(n)
 
         # H = G^T * H
@@ -37,7 +38,7 @@ def qr_iteration_householder_shift(A, max_iter=10000, tol=1e-10):
 
             H[:i+2,i:i+2] = givens_column(H[:i+2,i:i+2],c[i],s[i])
 
-        # undo shift: H <- H + muI
+        # undo shift
         H += mu * np.eye(n)
 
         error = np.max(np.abs(np.tril(H, -1)))
@@ -50,38 +51,38 @@ def qr_iteration_householder_shift(A, max_iter=10000, tol=1e-10):
 
 def qr_iteration_householder_shift_deflation(A, max_iter=10000, tol=1e-12):
     n = A.shape[0]
-    H, Q = hessenberg_matrix(A)
 
-    m = n  # keep m across iterations
+    start = time.time()
+    H, Q = hessenberg_matrix(A)
+    end = time.time()
+
+    print(f"Hessenberg time: {end-start} seconds")
+
+    # keep m across iterations
+    m = n
 
     for k in range(max_iter):
 
-        # --- DEFLATION (relative criterion recommended) ---
+        # Deflation
         while m > 1 and abs(H[m-1, m-2]) < tol * (abs(H[m-2,m-2]) + abs(H[m-1,m-1])):
             H[m-1, m-2] = 0
             m -= 1
 
-        # matrix fully reduced?
+        # If the matrix is fully reduced end loop
         if m <= 1:
             break
 
-        # handle 2x2 blocks explicitly
+        # If we have just a 2x2 block stop
         if m == 2:
-            # no QR step needed—just compute the 2x2 eigenvalues
-            # Normally we would solve analytically, but here just stop
             break
 
         H_active = H[:m, :m]
 
-        # --- SAFE SHIFT LOGIC ---
+        # Deals with small values for shift choosing
         if abs(H_active[-1, -1]) < 1e-12:
             mu = 0
         else:
-            a = H_active[-2, -2]
-            b = H_active[-2, -1]
-            c2 = H_active[-1, -1]
-            d = (a - c2) / 2
-            mu = c2 - (np.sign(d) * b ** 2) / (abs(d) + np.sqrt(d ** 2 + b ** 2))
+            mu = wilkinson_shift(H_active[-1, -1], H_active[-2, -2], H_active[-2, -1])
 
         # apply shift
         H_active -= mu * np.eye(m)
@@ -90,13 +91,13 @@ def qr_iteration_householder_shift_deflation(A, max_iter=10000, tol=1e-12):
         c = np.zeros(m)
         s = np.zeros(m)
 
-        # --- QR STEP (Left) ---
+        # Left QR step
         for i in range(m - 1):
             c[i], s[i] = givens_args(H_active[i, i], H_active[i + 1, i])
             H_active[i:i + 2, i:m] = givens_row(H_active[i:i + 2, i:m], c[i], s[i])
             Q[i:i + 2, :] = givens_row(Q[i:i + 2, :], c[i], s[i])
 
-        # --- QR STEP (Right) ---
+        # Right QR step
         for i in range(m - 1):
             H_active[:i + 2, i:i + 2] = givens_column(H_active[:i + 2, i:i + 2], c[i], s[i])
 
@@ -104,7 +105,6 @@ def qr_iteration_householder_shift_deflation(A, max_iter=10000, tol=1e-12):
         H_active += mu * np.eye(m)
         H[:m, :m] = H_active
 
-        # logging
         err = np.max(np.abs(np.tril(H, -1)))
         #print(f"k={k}, m={m}, shift={mu:.3e}, error={err:.3e}")
 
@@ -117,42 +117,39 @@ def qr_iteration_householder_deflation(A, max_iter=10000, tol=1e-12):
     n = A.shape[0]
     H, Q = hessenberg_matrix(A)
 
-    m = n  # keep m across iterations
+    # keep m across iterations
+    m = n
 
     for k in range(max_iter):
 
-        # --- DEFLATION (relative criterion recommended) ---
+        # Deflation
         while m > 1 and abs(H[m-1, m-2]) < tol * (abs(H[m-2,m-2]) + abs(H[m-1,m-1])):
             H[m-1, m-2] = 0
             m -= 1
 
-        # matrix fully reduced?
+        # If the matrix is fully reduced end loop
         if m <= 1:
             break
 
-        # handle 2x2 blocks explicitly
+        # If we have just a 2x2 block stop
         if m == 2:
-            # no QR step needed—just compute the 2x2 eigenvalues
-            # Normally we would solve analytically, but here just stop
             break
 
         H_active = H[:m, :m]
 
-        # Givens rotation arrays sized to m
         c = np.zeros(m)
         s = np.zeros(m)
 
-        # --- QR STEP (Left) ---
+        # Left QR step
         for i in range(m - 1):
             c[i], s[i] = givens_args(H_active[i, i], H_active[i + 1, i])
             H_active[i:i + 2, i:m] = givens_row(H_active[i:i + 2, i:m], c[i], s[i])
             Q[i:i + 2, :] = givens_row(Q[i:i + 2, :], c[i], s[i])
 
-        # --- QR STEP (Right) ---
+        # Right QR step
         for i in range(m - 1):
             H_active[:i + 2, i:i + 2] = givens_column(H_active[:i + 2, i:i + 2], c[i], s[i])
 
-        # logging
         err = np.max(np.abs(np.tril(H, -1)))
 
         if err < tol:
@@ -160,7 +157,7 @@ def qr_iteration_householder_deflation(A, max_iter=10000, tol=1e-12):
 
     return H, Q
 
-def qr_iteration_householder_h(H, max_iter=10000, tol=1e-10):
+def qr_iteration_householder_h(H, max_iter=10000, tol=1e-8):
 
     n = H.shape[0]
     Q = np.eye(n)
@@ -187,6 +184,11 @@ def qr_iteration_householder_h(H, max_iter=10000, tol=1e-10):
             break
 
     return H,Q
+
+
+def qr_iteration_tridiagonal(alpha, beta, tol=1e-14, maxiter=10000):
+    return ""
+
 
 # CLASS NOTES
 def qr_iteration(A, Q=None, maxiter=10000, tol=1e-5):
