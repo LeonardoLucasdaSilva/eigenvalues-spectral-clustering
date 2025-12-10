@@ -14,41 +14,41 @@ r1 = np.linalg.eigvals(L_sym)
 times = []
 
 # Number of samples to average time
-n = 5
+n = 1
 
-print("QR iteration with shift for L_sym matrix:")
-for k in range(n):
-
-    start = time.time()
-
-    H,Q = qr_iteration_householder_shift(L_sym, tol = 5e-8)
-
-    end = time.time()
-
-    # Retrieve eigenvalues from diagonal
-    r2 = np.diag(H)
-
-    times.append(end - start)
-
-print(f"Average processing time with {n} samples: {np.mean(times)} seconds")
-error_shift, count_error_shift = relative_error(r1,r2,title = "Shifted QR")
-
-print("QR iteration with deflation for L_sym matrix:")
-for k in range(n):
-
-    start = time.time()
-
-    H,Q = qr_iteration_householder_deflation(L_sym, tol = 5e-8)
-
-    end = time.time()
-
-    # Retrieve eigenvalues from diagonal
-    r3 = np.diag(H)
-
-    times.append(end - start)
-
-print(f"Average processing time with {n} samples: {np.mean(times)} seconds")
-error_deflation,count_error_deflation = relative_error(r1,r3, title="Deflated QR")
+# print("QR iteration with shift for L_sym matrix:")
+# for k in range(n):
+#
+#     start = time.time()
+#
+#     H,Q = qr_iteration_householder_shift(L_sym, tol = 5e-8)
+#
+#     end = time.time()
+#
+#     # Retrieve eigenvalues from diagonal
+#     r2 = np.diag(H)
+#
+#     times.append(end - start)
+#
+# print(f"Average processing time with {n} samples: {np.mean(times)} seconds")
+# error_shift, count_error_shift = relative_error(r1,r2,title = "Shifted QR")
+#
+# print("QR iteration with deflation for L_sym matrix:")
+# for k in range(n):
+#
+#     start = time.time()
+#
+#     H,Q = qr_iteration_householder_deflation(L_sym, tol = 5e-8)
+#
+#     end = time.time()
+#
+#     # Retrieve eigenvalues from diagonal
+#     r3 = np.diag(H)
+#
+#     times.append(end - start)
+#
+# print(f"Average processing time with {n} samples: {np.mean(times)} seconds")
+# error_deflation,count_error_deflation = relative_error(r1,r3, title="Deflated QR")
 
 print("QR iteration with shift and deflation for L_sym matrix:")
 for k in range(n):

@@ -61,12 +61,15 @@ def qr_iteration_householder_shift_deflation(A, max_iter=10000, tol=1e-12):
     # keep m across iterations
     m = n
 
+    deflation_count = 0
+
     for k in range(max_iter):
 
         # Deflation
         while m > 1 and abs(H[m-1, m-2]) < tol * (abs(H[m-2,m-2]) + abs(H[m-1,m-1])):
             H[m-1, m-2] = 0
             m -= 1
+            deflation_count += 1
 
         # If the matrix is fully reduced end loop
         if m <= 1:
@@ -106,16 +109,19 @@ def qr_iteration_householder_shift_deflation(A, max_iter=10000, tol=1e-12):
         H[:m, :m] = H_active
 
         err = np.max(np.abs(np.tril(H, -1)))
+        print(f'k = {k}, shift = {mu}, error = {err}')
         #print(f"k={k}, m={m}, shift={mu:.3e}, error={err:.3e}")
 
         if err < tol:
             break
 
+        print(deflation_count)
     return H, Q
 
 def qr_iteration_householder_deflation(A, max_iter=10000, tol=1e-12):
     n = A.shape[0]
     H, Q = hessenberg_matrix(A)
+    deflation_count = 0
 
     # keep m across iterations
     m = n
@@ -126,6 +132,7 @@ def qr_iteration_householder_deflation(A, max_iter=10000, tol=1e-12):
         while m > 1 and abs(H[m-1, m-2]) < tol * (abs(H[m-2,m-2]) + abs(H[m-1,m-1])):
             H[m-1, m-2] = 0
             m -= 1
+            deflation_count += 1
 
         # If the matrix is fully reduced end loop
         if m <= 1:
@@ -154,6 +161,8 @@ def qr_iteration_householder_deflation(A, max_iter=10000, tol=1e-12):
 
         if err < tol:
             break
+
+        print(deflation_count)
 
     return H, Q
 
