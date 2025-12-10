@@ -60,13 +60,13 @@ def matrix_L_rw(normalize, sigma, dataset):
 
     if dataset == 'iris':
         path = "../../datasets/iris.csv"
-        cols = ["sepal_length", "sepal_width", "petal_length", "petal_width"]  # choose which columns matter
+        cols = ["sepal_length", "sepal_width", "petal_length", "petal_width"]
         filename = "../../matrices/iris_rw.npy"
 
     elif dataset == 'tesla':
         path = "../../datasets/tesla_deliveries_dataset_2015_2025.csv"
         cols = ["Estimated_Deliveries", "Production_Units", "Avg_Price_USD", "Battery_Capacity_kWh", "Range_km",
-                      "CO2_Saved_tons", "Charging_Stations"]  # choose which columns matter
+                      "CO2_Saved_tons", "Charging_Stations"]
         filename = "../../matrices/tesla_rw.npy"
     elif dataset == 'd_and_d':
         path = "../../datasets/d_and_d.csv"
